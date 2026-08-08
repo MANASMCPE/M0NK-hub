@@ -1,0 +1,843 @@
+Welcome To M0NK Hub
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>MonkHub - Script Dashboard</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top, #182033 0%, #080b12 45%, #05070b 100%);
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    /* TOP BAR */
+    header {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      background: rgba(10, 13, 20, 0.92);
+      border-bottom: 1px solid #252b38;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+
+    .logo {
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .logo span {
+      color: #7c5cff;
+    }
+
+    .status {
+      color: #8e99ad;
+      font-size: 13px;
+    }
+
+    /* LAYOUT */
+    .container {
+      width: min(1100px, 92%);
+      margin: 40px auto;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 35px;
+    }
+
+    .hero h1 {
+      font-size: clamp(30px, 6vw, 54px);
+      margin-bottom: 12px;
+    }
+
+    .hero h1 span {
+      color: #8c6cff;
+    }
+
+    .hero p {
+      color: #9aa4b5;
+      max-width: 650px;
+      margin: auto;
+      line-height: 1.7;
+    }
+
+    /* CARDS */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 18px;
+      margin-top: 25px;
+    }
+
+    .card {
+      background: rgba(15, 19, 29, 0.9);
+      border: 1px solid #282f3d;
+      border-radius: 16px;
+      padding: 24px;
+      transition: .25s;
+      box-shadow: 0 10px 35px rgba(0,0,0,.25);
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      border-color: #765cff;
+      box-shadow: 0 15px 40px rgba(91, 70, 190, .2);
+    }
+
+    .icon {
+      width: 45px;
+      height: 45px;
+      border-radius: 12px;
+      background: #201b3d;
+      display: grid;
+      place-items: center;
+      font-size: 21px;
+      margin-bottom: 17px;
+    }
+
+    .card h2 {
+      font-size: 19px;
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      color: #8d97a9;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    /* BUTTONS */
+    button,
+    .btn {
+      border: 0;
+      background: #755cff;
+      color: white;
+      padding: 11px 17px;
+      border-radius: 9px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: .2s;
+    }
+
+    button:hover,
+    .btn:hover {
+      background: #927fff;
+      transform: translateY(-1px);
+    }
+
+    .secondary {
+      background: #202634;
+    }
+
+    .secondary:hover {
+      background: #2b3446;
+    }
+
+    /* PANEL */
+    .panel {
+      background: rgba(12, 16, 24, .94);
+      border: 1px solid #282f3d;
+      border-radius: 16px;
+      margin-top: 30px;
+      padding: 25px;
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .panel-title h2 {
+      font-size: 21px;
+    }
+
+    /* SCRIPT LIST */
+    .script {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 17px;
+      margin-bottom: 12px;
+      border: 1px solid #262d3a;
+      background: #111620;
+      border-radius: 11px;
+    }
+
+    .script:last-child {
+      margin-bottom: 0;
+    }
+
+    .script-info h3 {
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+
+    .script-info p {
+      color: #7e899d;
+      font-size: 13px;
+    }
+
+    .script-actions {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    /* MODAL */
+    .modal-bg {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.75);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 999;
+    }
+
+    .modal {
+      width: min(500px, 100%);
+      background: #10151f;
+      border: 1px solid #303848;
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 25px 80px rgba(0,0,0,.5);
+    }
+
+    .modal h2 {
+      margin-bottom: 18px;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      background: #080c13;
+      border: 1px solid #2c3443;
+      color: white;
+      border-radius: 9px;
+      padding: 12px;
+      outline: none;
+      margin-bottom: 12px;
+      font-family: inherit;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: #765cff;
+    }
+
+    textarea {
+      min-height: 180px;
+      resize: vertical;
+      font-family: monospace;
+    }
+
+    .modal-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    /* LOGIN */
+    #loginScreen {
+      position: fixed;
+      inset: 0;
+      background: #06080d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 2000;
+    }
+
+    .login-box {
+      width: min(420px, 100%);
+      background: #10151f;
+      border: 1px solid #2b3342;
+      border-radius: 18px;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .login-box h1 {
+      margin-bottom: 8px;
+    }
+
+    .login-box p {
+      color: #8994a7;
+      font-size: 14px;
+      margin-bottom: 22px;
+      line-height: 1.6;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      color: #687386;
+      padding: 45px 20px 30px;
+      font-size: 13px;
+    }
+
+    /* MOBILE */
+    @media (max-width: 650px) {
+      header {
+        padding: 0 16px;
+      }
+
+      .container {
+        margin-top: 25px;
+      }
+
+      .script {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .script-actions {
+        width: 100%;
+      }
+
+      .script-actions button {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- LOGIN -->
+  <section id="loginScreen">
+    <div class="login-box">
+      <h1>Welcome to <span style="color:#8c6cff;">MonkHub</span></h1>
+
+      <p>
+        A simple dashboard for sharing and managing
+        your coding projects.
+      </p>
+
+      <input
+        id="username"
+        type="text"
+        maxlength="20"
+        placeholder="Enter your name..."
+      >
+
+      <button onclick="enterSite()">
+        Enter Dashboard
+      </button>
+    </div>
+  </section>
+
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">
+      Monk<span>Hub</span>
+    </div>
+
+    <div class="status">
+      ● Online
+    </div>
+  </header>
+
+
+  <!-- MAIN -->
+  <main class="container">
+
+    <section class="hero">
+      <h1>Your <span>Developer Dashboard</span></h1>
+
+      <p>
+        Store, view and manage your own code projects
+        from one clean dashboard.
+      </p>
+    </section>
+
+
+    <!-- DASHBOARD CARDS -->
+    <section class="grid">
+
+      <div class="card">
+        <div class="icon">📦</div>
+
+        <h2>Projects</h2>
+
+        <p>
+          View your saved projects and code snippets.
+        </p>
+
+        <button onclick="showScripts()">
+          View Projects
+        </button>
+      </div>
+
+
+      <div class="card">
+        <div class="icon">⬆️</div>
+
+        <h2>Upload</h2>
+
+        <p>
+          Add your own code directly to this dashboard.
+        </p>
+
+        <button onclick="openUpload()">
+          Upload Code
+        </button>
+      </div>
+
+
+      <div class="card">
+        <div class="icon">✏️</div>
+
+        <h2>Editor</h2>
+
+        <p>
+          Edit saved snippets directly inside the browser.
+        </p>
+
+        <button onclick="openEditor()">
+          Open Editor
+        </button>
+      </div>
+
+
+      <div class="card">
+        <div class="icon">⚙️</div>
+
+        <h2>Settings</h2>
+
+        <p>
+          Manage your local dashboard settings.
+        </p>
+
+        <button class="secondary" onclick="logout()">
+          Log Out
+        </button>
+      </div>
+
+    </section>
+
+
+    <!-- PROJECTS -->
+    <section class="panel" id="projects">
+
+      <div class="panel-title">
+        <h2>📁 Your Projects</h2>
+
+        <button onclick="openUpload()">
+          + New
+        </button>
+      </div>
+
+      <div id="scriptList"></div>
+
+    </section>
+
+  </main>
+
+
+  <footer>
+    <p>MonkHub © 2026 — Independent educational project</p>
+    <br>
+    <p>
+      This website is not affiliated with or endorsed by
+      the reference website.
+    </p>
+  </footer>
+
+
+  <!-- UPLOAD MODAL -->
+  <div class="modal-bg" id="uploadModal">
+
+    <div class="modal">
+
+      <h2>Upload Project</h2>
+
+      <input
+        id="projectName"
+        placeholder="Project name..."
+      >
+
+      <textarea
+        id="projectCode"
+        placeholder="Paste your HTML, CSS, JavaScript or other code here..."
+      ></textarea>
+
+      <div class="modal-buttons">
+
+        <button
+          class="secondary"
+          onclick="closeUpload()">
+          Cancel
+        </button>
+
+        <button onclick="saveProject()">
+          Save Project
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <script>
+
+    let projects =
+      JSON.parse(localStorage.getItem("monkhub_projects")) || [
+        {
+          name: "Welcome Project",
+          code: "// Your project code goes here"
+        }
+      ];
+
+
+    /* LOGIN */
+
+    function enterSite() {
+
+      const username =
+        document.getElementById("username").value.trim();
+
+      if (!username) {
+        alert("Please enter your name.");
+        return;
+      }
+
+      localStorage.setItem("monkhub_user", username);
+
+      document.getElementById("loginScreen").style.display = "none";
+
+      renderProjects();
+    }
+
+
+    /* CHECK LOGIN */
+
+    window.onload = function () {
+
+      const savedUser =
+        localStorage.getItem("monkhub_user");
+
+      if (savedUser) {
+        document.getElementById("loginScreen").style.display = "none";
+      }
+
+      renderProjects();
+    };
+
+
+    /* RENDER PROJECTS */
+
+    function renderProjects() {
+
+      const list =
+        document.getElementById("scriptList");
+
+      list.innerHTML = "";
+
+      projects.forEach((project, index) => {
+
+        const item =
+          document.createElement("div");
+
+        item.className = "script";
+
+        item.innerHTML = `
+          <div class="script-info">
+            <h3>${escapeHTML(project.name)}</h3>
+            <p>Project ${index + 1}</p>
+          </div>
+
+          <div class="script-actions">
+
+            <button onclick="copyProject(${index})">
+              Copy
+            </button>
+
+            <button
+              class="secondary"
+              onclick="viewProject(${index})">
+              View
+            </button>
+
+            <button
+              class="secondary"
+              onclick="downloadProject(${index})">
+              Download
+            </button>
+
+            <button
+              class="secondary"
+              onclick="deleteProject(${index})">
+              Delete
+            </button>
+
+          </div>
+        `;
+
+        list.appendChild(item);
+
+      });
+    }
+
+
+    /* UPLOAD */
+
+    function openUpload() {
+
+      document.getElementById("uploadModal")
+        .style.display = "flex";
+
+    }
+
+
+    function closeUpload() {
+
+      document.getElementById("uploadModal")
+        .style.display = "none";
+
+    }
+
+
+    function saveProject() {
+
+      const name =
+        document.getElementById("projectName").value.trim();
+
+      const code =
+        document.getElementById("projectCode").value;
+
+      if (!name || !code) {
+
+        alert("Enter a project name and code.");
+
+        return;
+      }
+
+      projects.push({
+        name: name,
+        code: code
+      });
+
+      localStorage.setItem(
+        "monkhub_projects",
+        JSON.stringify(projects)
+      );
+
+      document.getElementById("projectName").value = "";
+
+      document.getElementById("projectCode").value = "";
+
+      closeUpload();
+
+      renderProjects();
+    }
+
+
+    /* COPY */
+
+    function copyProject(index) {
+
+      navigator.clipboard.writeText(
+        projects[index].code
+      );
+
+      alert("Code copied!");
+
+    }
+
+
+    /* VIEW */
+
+    function viewProject(index) {
+
+      const project = projects[index];
+
+      const win = window.open("", "_blank");
+
+      win.document.write(`
+        <html>
+        <head>
+          <title>${escapeHTML(project.name)}</title>
+
+          <style>
+            body {
+              background:#080b12;
+              color:#fff;
+              font-family:Arial;
+              padding:25px;
+            }
+
+            pre {
+              background:#111620;
+              padding:20px;
+              border-radius:12px;
+              overflow:auto;
+              white-space:pre-wrap;
+            }
+          </style>
+        </head>
+
+        <body>
+
+          <h1>${escapeHTML(project.name)}</h1>
+
+          <br>
+
+          <pre>${escapeHTML(project.code)}</pre>
+
+        </body>
+        </html>
+      `);
+
+      win.document.close();
+    }
+
+
+    /* DOWNLOAD */
+
+    function downloadProject(index) {
+
+      const project = projects[index];
+
+      const file =
+        new Blob(
+          [project.code],
+          {type:"text/plain"}
+        );
+
+      const url =
+        URL.createObjectURL(file);
+
+      const a =
+        document.createElement("a");
+
+      a.href = url;
+
+      a.download =
+        project.name.replace(/\s+/g, "-") + ".txt";
+
+      a.click();
+
+      URL.revokeObjectURL(url);
+    }
+
+
+    /* DELETE */
+
+    function deleteProject(index) {
+
+      if (!confirm("Delete this project?")) {
+        return;
+      }
+
+      projects.splice(index, 1);
+
+      localStorage.setItem(
+        "monkhub_projects",
+        JSON.stringify(projects)
+      );
+
+      renderProjects();
+    }
+
+
+    /* EDITOR */
+
+    function openEditor() {
+
+      if (projects.length === 0) {
+        alert("No projects available.");
+        return;
+      }
+
+      const index =
+        projects.length - 1;
+
+      const newCode =
+        prompt(
+          "Edit project code:",
+          projects[index].code
+        );
+
+      if (newCode !== null) {
+
+        projects[index].code = newCode;
+
+        localStorage.setItem(
+          "monkhub_projects",
+          JSON.stringify(projects)
+        );
+
+        renderProjects();
+      }
+    }
+
+
+    /* SCROLL */
+
+    function showScripts() {
+
+      document.getElementById("projects")
+        .scrollIntoView({
+          behavior:"smooth"
+        });
+
+    }
+
+
+    /* LOGOUT */
+
+    function logout() {
+
+      localStorage.removeItem("monkhub_user");
+
+      location.reload();
+
+    }
+
+
+    /* SECURITY */
+
+    function escapeHTML(text) {
+
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+    }
+
+  </script>
+
+</body>
+</html>
